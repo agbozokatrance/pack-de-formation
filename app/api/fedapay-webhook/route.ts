@@ -42,7 +42,7 @@ const EMAIL_CONTENT_HTML = `
           <tr>
             <td style="background:#12121f;padding:32px;border-left:1px solid rgba(255,107,0,0.2);border-right:1px solid rgba(255,107,0,0.2);">
               <p style="margin:0 0 24px 0;font-size:16px;line-height:1.7;color:#d1d5db;">
-                Votre paiement de <strong style="color:#FF6B00;">5 000 XOF</strong> a bien été reçu. Ci-dessous, retrouvez tous vos accès et ressources exclusives.
+                Votre paiement de <strong style="color:#FF6B00;">100 XOF</strong> a bien été reçu. Ci-dessous, retrouvez tous vos accès et ressources exclusives.
               </p>
 
               <!-- ACCÈS FORMATIONS -->
@@ -192,7 +192,7 @@ export async function POST(req: NextRequest) {
 
     const resend = new Resend(apiKey);
     const { data, error } = await resend.emails.send({
-      from: 'STARRIO Class <aenestostarrio@gmail.com>',
+      from: 'STARRIO Class <contact@starbetpay.com>',
       to: [email],
       subject: '✅ Vos accès au Pack Ultime 52 Formations sont prêts !',
       html: EMAIL_CONTENT_HTML,
