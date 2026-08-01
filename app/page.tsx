@@ -151,7 +151,7 @@ export default function HomePage() {
       content_name: 'Pack Ultime 52 Formations',
       content_ids: ['pack-52-formations'],
       content_type: 'product',
-      value: 5000,
+      value: 100,
       currency: 'XOF',
     });
   }, []);
@@ -177,7 +177,7 @@ export default function HomePage() {
       /* Fire Lead event */
       px('Lead', {
         content_name: 'Pack Ultime 52 Formations',
-        value: 5000,
+        value: 100,
         currency: 'XOF',
         email: form.email,
       });
@@ -187,7 +187,7 @@ export default function HomePage() {
     /* Fire InitiateCheckout */
     px('InitiateCheckout', {
       content_name: 'Pack Ultime 52 Formations',
-      value: 5000,
+      value: 100,
       currency: 'XOF',
       num_items: 1,
     });
@@ -200,7 +200,7 @@ export default function HomePage() {
     window.FedaPay.init({
       public_key: process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY || 'pk_live_0FA_CQ-5H_85zEZGzM_aVwM1',
       transaction: {
-        amount: 5000,
+        amount: 100,
         description: 'Pack Ultime 52 Formations - Accès à Vie',
       },
       customer: {
@@ -213,7 +213,7 @@ export default function HomePage() {
       onComplete(resp) {
         if (resp.reason === 'CHECKOUT COMPLETE') {
           /* Fire AddPaymentInfo & Purchase client-side */
-          px('AddPaymentInfo', { value: 5000, currency: 'XOF', content_name: 'Pack Ultime 52 Formations' });
+          px('AddPaymentInfo', { value: 100, currency: 'XOF', content_name: 'Pack Ultime 52 Formations' });
           /* Send email client-side (backup if webhook fails) */
           fetch('/api/send-email', {
             method: 'POST',
@@ -261,7 +261,7 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-6 reveal">
-              Masterisez les <span className="gradient-text">Compétences</span> les Plus Demandées avec le <span className="gradient-text glow-orange-text">Pack Ultime</span> 52 Formations
+              Maîtrisez les <span className="gradient-text">Compétences</span> les Plus Demandées avec le <span className="gradient-text glow-orange-text">Pack Ultime</span> 52 Formations
             </h1>
 
             <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8 leading-relaxed reveal">
@@ -296,7 +296,7 @@ export default function HomePage() {
                 <div className="text-4xl text-orange-400">→</div>
                 <div className="text-center">
                   <p className="text-sm text-orange-400 font-semibold mb-1">AUJOURD&apos;HUI SEULEMENT</p>
-                  <p className="text-5xl font-black text-white">5 000 <span className="text-orange-400 text-3xl">XOF</span></p>
+                  <p className="text-5xl font-black text-white">100 <span className="text-orange-400 text-3xl">XOF</span></p>
                 </div>
                 <div className="bg-red-500 text-white text-sm font-black px-3 py-1 rounded-full animate-pulse">-90% OFF</div>
               </div>
@@ -351,7 +351,7 @@ export default function HomePage() {
                 onClick={handleCheckout}
                 className="btn-shimmer text-white font-black text-lg md:text-xl px-10 py-5 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide"
               >
-                🛒 OBTENIR MES 52 FORMATIONS — 5 000 XOF
+                🛒 OBTENIR MES 52 FORMATIONS — 100 XOF
               </button>
               <p className="text-gray-400 text-sm flex items-center gap-2">
                 🔒 Paiement sécurisé via FedaPay — MTN, Moov, Orange, Wave, Carte Bancaire
@@ -449,7 +449,7 @@ export default function HomePage() {
               onClick={handleCheckout}
               className="btn-shimmer text-white font-black text-lg px-10 py-4 rounded-2xl transition-transform hover:scale-105 active:scale-95 uppercase"
             >
-              🎁 TOUT OBTENIR POUR 5 000 XOF SEULEMENT
+              🎁 TOUT OBTENIR POUR 100 XOF SEULEMENT
             </button>
           </div>
         </section>
@@ -504,11 +504,11 @@ export default function HomePage() {
           <div className="text-center bg-gradient-to-br from-orange-500/10 to-yellow-500/5 border border-orange-500/30 rounded-3xl p-10 md:p-16 glow-orange">
             <h2 className="text-3xl md:text-5xl font-black mb-4">Prêt(e) à <span className="gradient-text">Transformer</span> votre vie ?</h2>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto text-lg">
-              Rejoignez +2 400 entrepreneurs. Pour seulement <strong className="text-orange-400">5 000 XOF</strong>, accédez à 52 formations + 6 000 ebooks + 100 livres audio.
+              Rejoignez +2 400 entrepreneurs. Pour seulement <strong className="text-orange-400">100 XOF</strong>, accédez à 52 formations + 6 000 ebooks + 100 livres audio.
             </p>
             <div className="flex flex-col items-center gap-4">
               <button id="cta-middle-btn" onClick={handleCheckout} className="btn-shimmer text-white font-black text-xl px-12 py-6 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide">
-                🚀 JE VEUX LE PACK COMPLET — 5 000 XOF
+                🚀 JE VEUX LE PACK COMPLET — 100 XOF
               </button>
               <p className="text-gray-400 text-sm">⏰ Offre valable encore <span className="text-orange-400 font-mono font-bold">{pad(h)}:{pad(m)}:{pad(s)}</span></p>
               <p className="text-gray-500 text-xs">🔒 Paiement sécurisé — Accès immédiat après paiement</p>
@@ -534,7 +534,7 @@ export default function HomePage() {
             Dans 6 mois, vous serez au même endroit — ou vous aurez commencé à bâtir quelque chose de grand. La différence, c&apos;est la décision que vous prenez <strong className="text-orange-400">maintenant</strong>.
           </p>
           <button id="cta-final-btn" onClick={handleCheckout} className="btn-shimmer text-white font-black text-xl px-12 py-6 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide">
-            ✅ OUI, JE PRENDS LE PACK — 5 000 XOF
+            ✅ OUI, JE PRENDS LE PACK — 100 XOF
           </button>
           <p className="text-gray-500 text-sm mt-4">🔒 Paiement sécurisé · Mobile Money · Carte Bancaire · Accès immédiat</p>
         </section>
