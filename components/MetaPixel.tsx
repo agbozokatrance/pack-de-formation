@@ -3,7 +3,6 @@
 import Script from 'next/script';
 
 const PIXEL_ID = '1191042257432191';
-const TEST_EVENT_CODE = 'TEST85227';
 
 export default function MetaPixel() {
   return (
@@ -19,7 +18,6 @@ export default function MetaPixel() {
           s.parentNode.insertBefore(t,s)}(window, document,'script',
           'https://connect.facebook.net/en_US/fbevents.js');
           fbq('init', '${PIXEL_ID}');
-          fbq('set', 'test_event_code', '${TEST_EVENT_CODE}');
         `}
       </Script>
       <noscript>
