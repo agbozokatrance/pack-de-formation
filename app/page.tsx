@@ -211,17 +211,24 @@ export default function HomePage() {
       },
       currency: { iso: 'XOF' },
       onComplete(resp) {
-        if (resp.reason === 'CHECKOUT COMPLETE') {
-          /* Fire AddPaymentInfo & Purchase client-side */
-          px('AddPaymentInfo', { value: 100, currency: 'XOF', content_name: 'Pack Ultime 52 Formations' });
-          /* Send email client-side (backup if webhook fails) */
+        console.log('FedaPay onComplete response:', resp);
+        /* Fire AddPaymentInfo & Purchase client-side */
+        px('AddPaymentInfo', { value: 100, currency: 'XOF', content_name: 'Pack Ultime 52 Formations' });
+        px('Purchase', { value: 100, currency: 'XOF', content_name: 'Pack Ultime 52 Formations' });
+
+        /* Send email client-side backup */
+        if (form.email) {
           fetch('/api/send-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: form.email, name: form.name }),
           }).catch(console.error);
-          window.location.href = '/merci';
         }
+
+        /* Redirect to merci page */
+        setTimeout(() => {
+          window.location.href = '/merci';
+        }, 300);
       },
     }).open();
   }, [form, formSubmitted, validateForm]);
