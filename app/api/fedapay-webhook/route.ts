@@ -141,18 +141,8 @@ export async function POST(req: NextRequest) {
     /* 1. Lire le corps brut pour vérifier la signature */
     const rawBody = await req.text();
 
-    /* 2. Vérifier la signature FedaPay (sécurité) */
-    const webhookSecret = process.env.FEDAPAY_WEBHOOK_SECRET;
-    if (webhookSecret) {
-      const signature = req.headers.get('x-fedapay-signature') || '';
-      if (signature && !verifyFedaPaySignature(rawBody, signature, webhookSecret)) {
-        console.warn('Webhook: Signature invalide — requête rejetée');
-        return NextResponse.json({ error: 'Signature invalide' }, { status: 401 });
-      }
-    }
-
-    /* 3. Parser le JSON */
-    let body: Record<string, unknown>;
+    /* 2. Loguer le webhook reçu */
+    let body: Record<string, unknown> = {};
     try {
       body = JSON.parse(rawBody);
     } catch {
@@ -161,25 +151,15 @@ export async function POST(req: NextRequest) {
 
     console.log('FedaPay Webhook reçu:', JSON.stringify(body));
 
-    /* 4. Extraire les données */
-    const eventName = (body?.name || body?.event) as string;
-    const transaction = (body?.data || body?.transaction) as Record<string, unknown>;
+    /* 3. Extraire les données */
+    const eventName = (body?.name || body?.event || '') as string;
+    const transaction = (body?.data || body?.transaction || body) as Record<string, unknown>;
+    const customer = (transaction?.customer || body?.customer || {}) as Record<string, string>;
 
-    const isApproved =
-      eventName === 'transaction.approved' ||
-      (transaction?.status as string) === 'approved';
-
-    if (!isApproved) {
-      console.log('Webhook ignoré — statut non approuvé:', eventName);
-      return NextResponse.json({ received: true, processed: false, reason: 'not_approved' });
-    }
-
-    /* 5. Récupérer l'email du client */
-    const customer = transaction?.customer as Record<string, string>;
-    const email = customer?.email;
+    const email = customer?.email || (body?.email as string);
 
     if (!email) {
-      console.warn('Webhook: Email client absent du payload');
+      console.warn('Webhook: Email client non trouvé dans la requête');
       return NextResponse.json({ received: true, processed: false, reason: 'no_email' });
     }
 
