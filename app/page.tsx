@@ -151,8 +151,8 @@ export default function HomePage() {
       content_name: 'Pack Ultime 52 Formations',
       content_ids: ['pack-52-formations'],
       content_type: 'product',
-      value: 100,
-      currency: 'XOF',
+      value: 8.50,
+      currency: 'USD',
     });
   }, []);
 
@@ -177,8 +177,8 @@ export default function HomePage() {
       /* Fire Lead event */
       px('Lead', {
         content_name: 'Pack Ultime 52 Formations',
-        value: 100,
-        currency: 'XOF',
+        value: 8.50,
+        currency: 'USD',
         email: form.email,
       });
       setFormSubmitted(true);
@@ -187,8 +187,8 @@ export default function HomePage() {
     /* Fire InitiateCheckout */
     px('InitiateCheckout', {
       content_name: 'Pack Ultime 52 Formations',
-      value: 100,
-      currency: 'XOF',
+      value: 8.50,
+      currency: 'USD',
       num_items: 1,
     });
 
@@ -213,8 +213,8 @@ export default function HomePage() {
       onComplete(resp) {
         console.log('FedaPay onComplete response:', resp);
         /* Fire AddPaymentInfo & Purchase client-side */
-        px('AddPaymentInfo', { value: 100, currency: 'XOF', content_name: 'Pack Ultime 52 Formations' });
-        px('Purchase', { value: 100, currency: 'XOF', content_name: 'Pack Ultime 52 Formations' });
+        px('AddPaymentInfo', { value: 8.50, currency: 'USD', content_name: 'Pack Ultime 52 Formations' });
+        px('Purchase', { value: 8.50, currency: 'USD', content_name: 'Pack Ultime 52 Formations', content_ids: ['pack-52-formations'], content_type: 'product', num_items: 1 });
 
         /* Send email client-side backup */
         if (form.email) {
