@@ -214,7 +214,24 @@ export default function HomePage() {
         console.log('FedaPay onComplete response:', resp);
         /* Fire AddPaymentInfo & Purchase client-side */
         px('AddPaymentInfo', { value: 8.50, currency: 'USD', content_name: 'Pack Ultime 52 Formations' });
-        px('Purchase', { value: 8.50, currency: 'USD', content_name: 'Pack Ultime 52 Formations', content_ids: ['pack-52-formations'], content_type: 'product', num_items: 1 });
+        /* Événement personnalisé pour contourner la restriction Meta */
+        if (typeof window !== 'undefined' && window.fbq) {
+          window.fbq('trackCustom', 'AchatFormation', {
+            value: 8.50,
+            currency: 'USD',
+            content_name: 'Pack Ultime 52 Formations',
+            content_ids: ['pack-52-formations'],
+            num_items: 1,
+          });
+          window.fbq('track', 'Purchase', {
+            value: 8.50,
+            currency: 'USD',
+            content_name: 'Pack Ultime 52 Formations',
+            content_ids: ['pack-52-formations'],
+            content_type: 'product',
+            num_items: 1,
+          });
+        }
 
         /* Send email client-side backup */
         if (form.email) {
