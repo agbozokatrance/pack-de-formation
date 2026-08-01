@@ -11,16 +11,33 @@ declare global {
 
 export default function MerciPage() {
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.fbq) {
-      window.fbq('track', 'PageView');
-      window.fbq('track', 'Purchase', {
-        value: 100,
-        currency: 'XOF',
-        content_name: 'Pack Ultime 52 Formations',
-        content_ids: ['pack-52-formations'],
-        content_type: 'product',
-        num_items: 1,
-      });
+    /* Helper pour tracker l'achat de manière garantie */
+    const firePurchase = () => {
+      if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'PageView');
+        window.fbq('track', 'Purchase', {
+          value: 100,
+          currency: 'XOF',
+          content_name: 'Pack Ultime 52 Formations',
+          content_ids: ['pack-52-formations'],
+          content_type: 'product',
+          num_items: 1,
+        });
+        console.log('✅ Meta Pixel: Événement Purchase (Achat) envoyé avec succès !');
+        return true;
+      }
+      return false;
+    };
+
+    /* Essai immédiat */
+    if (!firePurchase()) {
+      /* Si window.fbq n'est pas encore chargé, réessayer toutes les 300ms */
+      const timer = setInterval(() => {
+        if (firePurchase()) {
+          clearInterval(timer);
+        }
+      }, 300);
+      return () => clearInterval(timer);
     }
   }, []);
 
@@ -93,14 +110,14 @@ export default function MerciPage() {
           <p className="text-gray-300 mb-4 font-semibold">🙏 Partagez cette opportunité avec votre entourage !</p>
           <div className="flex flex-wrap justify-center gap-3">
             <a
-              href={`https://wa.me/?text=${encodeURIComponent("🔥 J'ai rejoint le Pack Ultime 52 Formations + 6000 Ebooks + 100 Livres Audio pour seulement 5 000 XOF ! Accès à vie. Rejoins-moi ici : https://ton-domaine.com")}`}
+              href={`https://wa.me/?text=${encodeURIComponent("🔥 J'ai rejoint le Pack Ultime 52 Formations + 6000 Ebooks + 100 Livres Audio pour seulement 5 000 XOF ! Accès à vie. Rejoins-moi ici : https://pack-de-formation.vercel.app")}`}
               target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 bg-green-500/20 border border-green-500/30 text-green-400 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-green-500/30 transition-colors"
             >
               📤 Partager sur WhatsApp
             </a>
             <a
-              href="https://www.facebook.com/sharer/sharer.php?u=https://ton-domaine.com"
+              href="https://www.facebook.com/sharer/sharer.php?u=https://pack-de-formation.vercel.app"
               target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 bg-blue-500/20 border border-blue-500/30 text-blue-400 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-500/30 transition-colors"
             >
