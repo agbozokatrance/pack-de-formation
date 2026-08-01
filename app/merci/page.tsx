@@ -14,7 +14,7 @@ export default function MerciPage() {
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'PageView');
       window.fbq('track', 'Purchase', {
-        value: 5000,
+        value: 100,
         currency: 'XOF',
         content_name: 'Pack Ultime 52 Formations',
         content_ids: ['pack-52-formations'],
