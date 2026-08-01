@@ -15,8 +15,15 @@ export default function MerciPage() {
     const firePurchase = () => {
       if (typeof window !== 'undefined' && window.fbq) {
         window.fbq('track', 'PageView');
+        window.fbq('trackCustom', 'AchatFormation', {
+          value: 8.5,
+          currency: 'USD',
+          content_name: 'Pack Ultime 52 Formations',
+          content_ids: ['pack-52-formations'],
+          num_items: 1,
+        });
         window.fbq('track', 'Purchase', {
-          value: 8.50,
+          value: 8.5,
           currency: 'USD',
           content_name: 'Pack Ultime 52 Formations',
           content_ids: ['pack-52-formations'],
