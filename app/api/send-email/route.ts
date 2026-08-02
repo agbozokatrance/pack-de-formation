@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
     /* Premier essai : avec le domaine starbetpay.com */
     let result = await resend.emails.send({
       from: 'STARRIO Class <contact@starbetpay.com>',
-      reply_to: 'aenestostarrio@gmail.com',
+      replyTo: 'aenestostarrio@gmail.com',
       to: [email],
       subject: '✅ Vos accès au Pack Ultime 52 Formations sont prêts !',
       html: EMAIL_CONTENT_HTML,
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
       console.warn('Resend (starbetpay.com) échec, tentative via secours onboarding@resend.dev:', result.error);
       result = await resend.emails.send({
         from: 'STARRIO Class <onboarding@resend.dev>',
-        reply_to: 'aenestostarrio@gmail.com',
+        replyTo: 'aenestostarrio@gmail.com',
         to: [email],
         subject: '✅ Vos accès au Pack Ultime 52 Formations sont prêts !',
         html: EMAIL_CONTENT_HTML,
