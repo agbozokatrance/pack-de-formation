@@ -171,20 +171,32 @@ export async function POST(req: NextRequest) {
     }
 
     const resend = new Resend(apiKey);
-    const { data, error } = await resend.emails.send({
+    let result = await resend.emails.send({
       from: 'STARRIO Class <contact@starbetpay.com>',
+      reply_to: 'aenestostarrio@gmail.com',
       to: [email],
       subject: '✅ Vos accès au Pack Ultime 52 Formations sont prêts !',
       html: EMAIL_CONTENT_HTML,
     });
 
-    if (error) {
-      console.error('Resend — Erreur envoi email:', error);
-      return NextResponse.json({ received: true, error }, { status: 200 });
+    if (result.error) {
+      console.warn('Webhook Resend (starbetpay.com) échec, tentative via secours onboarding@resend.dev:', result.error);
+      result = await resend.emails.send({
+        from: 'STARRIO Class <onboarding@resend.dev>',
+        reply_to: 'aenestostarrio@gmail.com',
+        to: [email],
+        subject: '✅ Vos accès au Pack Ultime 52 Formations sont prêts !',
+        html: EMAIL_CONTENT_HTML,
+      });
     }
 
-    console.log(`✅ Email envoyé avec succès à ${email} | Resend ID: ${data?.id}`);
-    return NextResponse.json({ received: true, processed: true, emailSent: true, emailId: data?.id });
+    if (result.error) {
+      console.error('Resend — Erreur envoi email:', result.error);
+      return NextResponse.json({ received: true, error: result.error }, { status: 200 });
+    }
+
+    console.log(`✅ Email envoyé avec succès à ${email} | Resend ID: ${result.data?.id}`);
+    return NextResponse.json({ received: true, processed: true, emailSent: true, emailId: result.data?.id });
 
   } catch (err) {
     console.error('Erreur serveur Webhook:', err);
