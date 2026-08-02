@@ -26,7 +26,7 @@ const EMAIL_CONTENT_HTML = `
           <tr>
             <td style="background:#12121f;padding:32px;border-left:1px solid rgba(255,107,0,0.2);border-right:1px solid rgba(255,107,0,0.2);">
               <p style="margin:0 0 24px 0;font-size:16px;line-height:1.7;color:#d1d5db;">
-                Votre paiement de <strong style="color:#FF6B00;">5 000 XOF</strong> a bien été reçu. Ci-dessous, retrouvez tous vos accès et ressources exclusives.
+                Votre paiement a bien été reçu. Ci-dessous, retrouvez tous vos accès et ressources exclusives.
               </p>
               <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,rgba(255,107,0,0.15),rgba(18,18,31,0.9));border:1px solid rgba(255,107,0,0.4);border-radius:12px;margin-bottom:24px;">
                 <tr>
@@ -76,19 +76,33 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email requis' }, { status: 400 });
     }
 
-    const { data, error } = await resend.emails.send({
-      from: 'STARRIO Class <aenestostarrio@gmail.com>',
+    /* Premier essai : avec le domaine starbetpay.com */
+    let result = await resend.emails.send({
+      from: 'STARRIO Class <contact@starbetpay.com>',
+      reply_to: 'aenestostarrio@gmail.com',
       to: [email],
       subject: '✅ Vos accès au Pack Ultime 52 Formations sont prêts !',
       html: EMAIL_CONTENT_HTML,
     });
 
-    if (error) {
-      console.error('Resend error:', error);
-      return NextResponse.json({ error }, { status: 500 });
+    /* Si échec domaine non vérifié, secours automatique via onboarding@resend.dev */
+    if (result.error) {
+      console.warn('Resend (starbetpay.com) échec, tentative via secours onboarding@resend.dev:', result.error);
+      result = await resend.emails.send({
+        from: 'STARRIO Class <onboarding@resend.dev>',
+        reply_to: 'aenestostarrio@gmail.com',
+        to: [email],
+        subject: '✅ Vos accès au Pack Ultime 52 Formations sont prêts !',
+        html: EMAIL_CONTENT_HTML,
+      });
     }
 
-    return NextResponse.json({ success: true, id: data?.id });
+    if (result.error) {
+      console.error('Resend error final:', result.error);
+      return NextResponse.json({ error: result.error }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, id: result.data?.id });
   } catch (err) {
     console.error('Send email error:', err);
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
