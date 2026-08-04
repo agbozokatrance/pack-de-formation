@@ -117,7 +117,7 @@ export default function MerciPage() {
           <p className="text-gray-300 mb-4 font-semibold">🙏 Partagez cette opportunité avec votre entourage !</p>
           <div className="flex flex-wrap justify-center gap-3">
             <a
-              href={`https://wa.me/?text=${encodeURIComponent("🔥 J'ai rejoint le Pack Ultime 52 Formations + 6000 Ebooks + 100 Livres Audio pour seulement 5 000 XOF ! Accès à vie. Rejoins-moi ici : https://pack-de-formation.vercel.app")}`}
+              href={`https://wa.me/?text=${encodeURIComponent("🔥 J'ai rejoint le Pack Ultime 52 Formations + 6000 Ebooks + 100 Livres Audio pour seulement 2 500 XOF ! Accès à vie. Rejoins-moi ici : https://pack-de-formation.vercel.app")}`}
               target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 bg-green-500/20 border border-green-500/30 text-green-400 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-green-500/30 transition-colors"
             >
