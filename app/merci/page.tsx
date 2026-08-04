@@ -92,7 +92,7 @@ export default function MerciPage() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
           <a
             id="whatsapp-support-btn"
-            href="https://wa.me/2290146120426?text=Bonjour%2C%20j%27ai%20effectu%C3%A9%20mon%20paiement%20pour%20le%20Pack%20Ultime%2052%20Formations%20et%20j%27ai%20besoin%20d%27aide."
+            href="https://wa.me/2290161973836?text=Bonjour%2C%20j%27ai%20effectu%C3%A9%20mon%20paiement%20pour%20le%20Pack%20Ultime%2052%20Formations%20et%20j%27ai%20besoin%20d%27aide."
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white font-bold px-8 py-4 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-green-500/20"
@@ -134,7 +134,7 @@ export default function MerciPage() {
         </div>
 
         <p className="text-gray-600 text-xs mt-8">
-          Si vous ne recevez pas d&apos;e-mail dans les 10 minutes, contactez notre support WhatsApp au +229 01 46 12 04 26.
+          Si vous ne recevez pas d&apos;e-mail dans les 10 minutes, contactez notre support WhatsApp au +229 01 61 97 38 36.
         </p>
       </div>
     </main>
