@@ -87,7 +87,7 @@ function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: str
 
 /* ─── FAQ ─── */
 const faqData = [
-  { q: 'Comment vais-je recevoir mes formations après le paiement ?', a: "Dès que votre paiement de 5 000 XOF est validé sur FedaPay, vous êtes automatiquement redirigé vers la page de confirmation et vous recevez un e-mail instantané contenant vos accès directs aux 52 formations." },
+  { q: 'Comment vais-je recevoir mes formations après le paiement ?', a: "Dès que votre paiement de 2 500 XOF est validé sur FedaPay, vous êtes automatiquement redirigé vers la page de confirmation et vous recevez un e-mail instantané contenant vos accès directs aux 52 formations." },
   { q: 'Quels sont les modes de paiement acceptés ?', a: 'Vous pouvez payer en toute sécurité via Mobile Money (MTN, Moov, Orange, Wave) ou par carte bancaire grâce à FedaPay.' },
   { q: 'Combien de temps ai-je accès aux formations ?', a: "Votre accès est illimité et à vie. Vous pouvez vous former à votre rythme, quand vous voulez, sans aucune contrainte de temps." },
   { q: 'Est-ce adapté aux débutants ?', a: "Oui, toutes les formations sont conçues pour vous guider pas à pas, du niveau débutant au niveau avancé. Aucune expérience préalable n'est requise." },
@@ -131,7 +131,7 @@ const bonuses = [
 const testimonials = [
   { name: 'Kofi Mensah', country: '🇬🇭 Ghana', text: "En 3 semaines avec le pack, j'ai lancé ma boutique Shopify et généré mes 2 premières ventes. Incroyable !", stars: 5 },
   { name: 'Aminata Traoré', country: '🇨🇮 Côte d\'Ivoire', text: 'Les formations IA ont complètement transformé ma façon de travailler. Je crée maintenant du contenu 3x plus vite.', stars: 5 },
-  { name: 'Moussa Diallo', country: '🇸🇳 Sénégal', text: "5 000 XOF pour 52 formations... c'est une blague tellement c'est rentable. J'en ai récupéré 10x en 1 mois.", stars: 5 },
+  { name: 'Moussa Diallo', country: '🇸🇳 Sénégal', text: "2 500 XOF pour 52 formations... c'est une blague tellement c'est rentable. J'en ai récupéré 10x en 1 mois.", stars: 5 },
 ];
 
 /* ─── MAIN PAGE ─── */
@@ -200,7 +200,7 @@ export default function HomePage() {
     window.FedaPay.init({
       public_key: process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY || 'pk_live_0FA_CQ-5H_85zEZGzM_aVwM1',
       transaction: {
-        amount: 100,
+        amount: 2500,
         description: 'Pack Ultime 52 Formations - Accès à Vie',
       },
       customer: {
@@ -302,9 +302,9 @@ export default function HomePage() {
                 <div className="text-4xl text-orange-400">→</div>
                 <div className="text-center">
                   <p className="text-sm text-orange-400 font-semibold mb-1">AUJOURD&apos;HUI SEULEMENT</p>
-                  <p className="text-5xl font-black text-white">100 <span className="text-orange-400 text-3xl">XOF</span></p>
+                  <p className="text-5xl font-black text-white">2 500 <span className="text-orange-400 text-3xl">XOF</span></p>
                 </div>
-                <div className="bg-red-500 text-white text-sm font-black px-3 py-1 rounded-full animate-pulse">-90% OFF</div>
+                <div className="bg-red-500 text-white text-sm font-black px-3 py-1 rounded-full animate-pulse">-95% OFF</div>
               </div>
             </div>
 
@@ -357,7 +357,7 @@ export default function HomePage() {
                 onClick={handleCheckout}
                 className="btn-shimmer text-white font-black text-lg md:text-xl px-10 py-5 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide"
               >
-                🛒 OBTENIR MES 52 FORMATIONS — 100 XOF
+                🛒 OBTENIR MES 52 FORMATIONS — 2 500 XOF
               </button>
               <p className="text-gray-400 text-sm flex items-center gap-2">
                 🔒 Paiement sécurisé via FedaPay — MTN, Moov, Orange, Wave, Carte Bancaire
@@ -455,7 +455,7 @@ export default function HomePage() {
               onClick={handleCheckout}
               className="btn-shimmer text-white font-black text-lg px-10 py-4 rounded-2xl transition-transform hover:scale-105 active:scale-95 uppercase"
             >
-              🎁 TOUT OBTENIR POUR 100 XOF SEULEMENT
+              🎁 TOUT OBTENIR POUR 2 500 XOF SEULEMENT
             </button>
           </div>
         </section>
@@ -510,11 +510,11 @@ export default function HomePage() {
           <div className="text-center bg-gradient-to-br from-orange-500/10 to-yellow-500/5 border border-orange-500/30 rounded-3xl p-10 md:p-16 glow-orange">
             <h2 className="text-3xl md:text-5xl font-black mb-4">Prêt(e) à <span className="gradient-text">Transformer</span> votre vie ?</h2>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto text-lg">
-              Rejoignez +2 400 entrepreneurs. Pour seulement <strong className="text-orange-400">100 XOF</strong>, accédez à 52 formations + 6 000 ebooks + 100 livres audio.
+              Rejoignez +2 400 entrepreneurs. Pour seulement <strong className="text-orange-400">2 500 XOF</strong>, accédez à 52 formations + 6 000 ebooks + 100 livres audio.
             </p>
             <div className="flex flex-col items-center gap-4">
               <button id="cta-middle-btn" onClick={handleCheckout} className="btn-shimmer text-white font-black text-xl px-12 py-6 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide">
-                🚀 JE VEUX LE PACK COMPLET — 100 XOF
+                🚀 JE VEUX LE PACK COMPLET — 2 500 XOF
               </button>
               <p className="text-gray-400 text-sm">⏰ Offre valable encore <span className="text-orange-400 font-mono font-bold">{pad(h)}:{pad(m)}:{pad(s)}</span></p>
               <p className="text-gray-500 text-xs">🔒 Paiement sécurisé — Accès immédiat après paiement</p>
@@ -540,7 +540,7 @@ export default function HomePage() {
             Dans 6 mois, vous serez au même endroit — ou vous aurez commencé à bâtir quelque chose de grand. La différence, c&apos;est la décision que vous prenez <strong className="text-orange-400">maintenant</strong>.
           </p>
           <button id="cta-final-btn" onClick={handleCheckout} className="btn-shimmer text-white font-black text-xl px-12 py-6 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide">
-            ✅ OUI, JE PRENDS LE PACK — 100 XOF
+            ✅ OUI, JE PRENDS LE PACK — 2 500 XOF
           </button>
           <p className="text-gray-500 text-sm mt-4">🔒 Paiement sécurisé · Mobile Money · Carte Bancaire · Accès immédiat</p>
         </section>
