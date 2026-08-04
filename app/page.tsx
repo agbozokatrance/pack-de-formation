@@ -143,6 +143,8 @@ export default function HomePage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [formSubmitted, setFormSubmitted] = useState(false);
+  /* Loading state — afficher un spinner immédiatement quand on clique */
+  const [isLoading, setIsLoading] = useState(false);
 
   /* Pixel events on mount */
   useEffect(() => {
@@ -173,7 +175,6 @@ export default function HomePage() {
         document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
       }
-
       /* Fire Lead event */
       px('Lead', {
         content_name: 'Pack Ultime 52 Formations',
@@ -192,51 +193,61 @@ export default function HomePage() {
       num_items: 1,
     });
 
-    if (!window.FedaPay) {
-      alert("Le système de paiement charge... Réessayez dans 3 secondes.");
-      return;
-    }
+    /* Afficher immédiatement le spinner — l'utilisateur voit que ça charge */
+    setIsLoading(true);
 
-    window.FedaPay.init({
-      public_key: process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY || 'pk_live_0FA_CQ-5H_85zEZGzM_aVwM1',
-      transaction: {
-        amount: 2500,
-        description: 'Pack Ultime 52 Formations - Accès à Vie',
-      },
-      customer: {
-        email: form.email,
-        firstname: form.name.split(' ')[0] || form.name,
-        lastname: form.name.split(' ').slice(1).join(' ') || '',
-        phone_number: { number: form.phone, country: 'BJ' },
-      },
-      currency: { iso: 'XOF' },
-      onComplete(resp) {
-        console.log('FedaPay onComplete response:', resp);
-        /* Fire AddPaymentInfo client-side */
-        px('AddPaymentInfo', { value: 8.50, currency: 'USD', content_name: 'Pack Ultime 52 Formations' });
-
-        /* Send email client-side backup */
-        if (form.email) {
-          fetch('/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: form.email, name: form.name }),
-          }).catch(console.error);
-        }
-
-        /* Redirect to merci page */
-        setTimeout(() => {
-          window.location.href = '/merci';
-        }, 300);
-      },
-    }).open();
+    /* Si FedaPay n'est pas encore chargé, réessayer toutes les 200ms (max 5 sec) */
+    let attempts = 0;
+    const tryOpen = () => {
+      if (window.FedaPay) {
+        setIsLoading(false);
+        window.FedaPay.init({
+          public_key: process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY || 'pk_live_0FA_CQ-5H_85zEZGzM_aVwM1',
+          transaction: {
+            amount: 2500,
+            description: 'Pack Ultime 52 Formations - Accès à Vie',
+          },
+          customer: {
+            email: form.email,
+            firstname: form.name.split(' ')[0] || form.name,
+            lastname: form.name.split(' ').slice(1).join(' ') || '',
+            phone_number: { number: form.phone, country: 'BJ' },
+          },
+          currency: { iso: 'XOF' },
+          onComplete(resp) {
+            console.log('FedaPay onComplete response:', resp);
+            px('AddPaymentInfo', { value: 8.50, currency: 'USD', content_name: 'Pack Ultime 52 Formations' });
+            if (form.email) {
+              fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: form.email, name: form.name }),
+              }).catch(console.error);
+            }
+            setTimeout(() => { window.location.href = '/merci'; }, 300);
+          },
+        }).open();
+      } else if (attempts < 25) {
+        attempts++;
+        setTimeout(tryOpen, 200);
+      } else {
+        setIsLoading(false);
+        alert('Le système de paiement est lent à charger. Veuillez rafraîchir la page et réessayer.');
+      }
+    };
+    tryOpen();
   }, [form, formSubmitted, validateForm]);
 
   const pad = (n: number) => String(n).padStart(2, '0');
 
   return (
     <>
-      <Script src="https://cdn.fedapay.com/checkout.js?v=1.1.7" strategy="lazyOnload" />
+      {/* FedaPay charge après que la page soit interactive pour ne pas bloquer l'affichage */}
+      <Script
+        src="https://cdn.fedapay.com/checkout.js?v=1.1.7"
+        strategy="afterInteractive"
+        onLoad={() => console.log('✅ FedaPay chargé')}
+      />
 
       <main className="min-h-screen hero-bg text-white font-sans overflow-x-hidden">
 
@@ -355,9 +366,20 @@ export default function HomePage() {
               <button
                 id="cta-hero-btn"
                 onClick={handleCheckout}
-                className="btn-shimmer text-white font-black text-lg md:text-xl px-10 py-5 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide"
+                disabled={isLoading}
+                className="btn-shimmer text-white font-black text-lg md:text-xl px-10 py-5 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide disabled:opacity-80 disabled:cursor-wait flex items-center gap-3"
               >
-                🛒 OBTENIR MES 52 FORMATIONS — 2 500 XOF
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin w-6 h-6 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                    </svg>
+                    Chargement du paiement...
+                  </>
+                ) : (
+                  <>🛒 OBTENIR MES 52 FORMATIONS — 2 500 XOF</>
+                )}
               </button>
               <p className="text-gray-400 text-sm flex items-center gap-2">
                 🔒 Paiement sécurisé via FedaPay — MTN, Moov, Orange, Wave, Carte Bancaire
@@ -450,13 +472,18 @@ export default function HomePage() {
               Valeur totale du Pack Complet : <span className="gradient-text">125 000+ XOF</span>
             </p>
             <p className="text-gray-400 mb-4">52 formations + 100 livres audio + 6 000 ebooks + applications</p>
-            <button
-              id="cta-bonus-btn"
-              onClick={handleCheckout}
-              className="btn-shimmer text-white font-black text-lg px-10 py-4 rounded-2xl transition-transform hover:scale-105 active:scale-95 uppercase"
-            >
-              🎁 TOUT OBTENIR POUR 2 500 XOF SEULEMENT
-            </button>
+              <button
+                id="cta-bonus-btn"
+                onClick={handleCheckout}
+                disabled={isLoading}
+                className="btn-shimmer text-white font-black text-lg px-10 py-4 rounded-2xl transition-transform hover:scale-105 active:scale-95 uppercase disabled:opacity-80 disabled:cursor-wait flex items-center gap-3 mx-auto"
+              >
+                {isLoading ? (
+                  <><svg className="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Chargement...</>
+                ) : (
+                  <>🎁 TOUT OBTENIR POUR 2 500 XOF SEULEMENT</>
+                )}
+              </button>
           </div>
         </section>
 
@@ -513,8 +540,12 @@ export default function HomePage() {
               Rejoignez +2 400 entrepreneurs. Pour seulement <strong className="text-orange-400">2 500 XOF</strong>, accédez à 52 formations + 6 000 ebooks + 100 livres audio.
             </p>
             <div className="flex flex-col items-center gap-4">
-              <button id="cta-middle-btn" onClick={handleCheckout} className="btn-shimmer text-white font-black text-xl px-12 py-6 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide">
-                🚀 JE VEUX LE PACK COMPLET — 2 500 XOF
+              <button id="cta-middle-btn" onClick={handleCheckout} disabled={isLoading} className="btn-shimmer text-white font-black text-xl px-12 py-6 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide disabled:opacity-80 disabled:cursor-wait flex items-center gap-3 mx-auto">
+                {isLoading ? (
+                  <><svg className="animate-spin w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Chargement...</>
+                ) : (
+                  <>🚀 JE VEUX LE PACK COMPLET — 2 500 XOF</>
+                )}
               </button>
               <p className="text-gray-400 text-sm">⏰ Offre valable encore <span className="text-orange-400 font-mono font-bold">{pad(h)}:{pad(m)}:{pad(s)}</span></p>
               <p className="text-gray-500 text-xs">🔒 Paiement sécurisé — Accès immédiat après paiement</p>
@@ -539,8 +570,12 @@ export default function HomePage() {
           <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto leading-relaxed">
             Dans 6 mois, vous serez au même endroit — ou vous aurez commencé à bâtir quelque chose de grand. La différence, c&apos;est la décision que vous prenez <strong className="text-orange-400">maintenant</strong>.
           </p>
-          <button id="cta-final-btn" onClick={handleCheckout} className="btn-shimmer text-white font-black text-xl px-12 py-6 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide">
-            ✅ OUI, JE PRENDS LE PACK — 2 500 XOF
+          <button id="cta-final-btn" onClick={handleCheckout} disabled={isLoading} className="btn-shimmer text-white font-black text-xl px-12 py-6 rounded-2xl shadow-2xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide disabled:opacity-80 disabled:cursor-wait flex items-center gap-3 mx-auto">
+            {isLoading ? (
+              <><svg className="animate-spin w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Chargement...</>
+            ) : (
+              <>✅ OUI, JE PRENDS LE PACK — 2 500 XOF</>
+            )}
           </button>
           <p className="text-gray-500 text-sm mt-4">🔒 Paiement sécurisé · Mobile Money · Carte Bancaire · Accès immédiat</p>
         </section>
