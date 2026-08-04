@@ -42,7 +42,7 @@ const EMAIL_CONTENT_HTML = `
           <tr>
             <td style="background:#12121f;padding:32px;border-left:1px solid rgba(255,107,0,0.2);border-right:1px solid rgba(255,107,0,0.2);">
               <p style="margin:0 0 24px 0;font-size:16px;line-height:1.7;color:#d1d5db;">
-                Votre paiement de <strong style="color:#FF6B00;">100 XOF</strong> a bien été reçu. Ci-dessous, retrouvez tous vos accès et ressources exclusives.
+                Votre paiement de <strong style="color:#FF6B00;">2 500 XOF</strong> a bien été reçu. Ci-dessous, retrouvez tous vos accès et ressources exclusives.
               </p>
 
               <!-- ACCÈS FORMATIONS -->
@@ -112,7 +112,7 @@ const EMAIL_CONTENT_HTML = `
               <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);border-radius:10px;">
                 <tr><td style="padding:16px 20px;text-align:center;">
                   <p style="margin:0 0 8px 0;font-size:14px;color:#d1d5db;">Un problème ? Notre support est disponible :</p>
-                  <a href="https://wa.me/2290146120426?text=Bonjour%2C%20j%27ai%20achet%C3%A9%20le%20Pack%20Ultime%2052%20Formations%20et%20j%27ai%20besoin%20d%27aide."
+                  <a href="https://wa.me/2290161973836?text=Bonjour%2C%20j%27ai%20achet%C3%A9%20le%20Pack%20Ultime%2052%20Formations%20et%20j%27ai%20besoin%20d%27aide."
                      style="display:inline-block;background:#25D366;color:#ffffff;font-weight:700;font-size:14px;text-decoration:none;padding:12px 24px;border-radius:8px;">
                     💬 Contacter le Support WhatsApp →
                   </a>
