@@ -20,8 +20,20 @@ declare global {
 
 /* ─── pixel helper ─── */
 function px(event: string, params?: Record<string, unknown>) {
-  if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', event, params);
+  if (typeof window !== 'undefined') {
+    if (window.fbq) {
+      window.fbq('track', event, params);
+    } else {
+      let attempts = 0;
+      const timer = setInterval(() => {
+        if (window.fbq) {
+          window.fbq('track', event, params);
+          clearInterval(timer);
+        } else if (++attempts > 30) {
+          clearInterval(timer);
+        }
+      }, 100);
+    }
   }
 }
 
@@ -138,6 +150,9 @@ const testimonials = [
 export default function HomePage() {
   const { h, m, s } = useCountdown();
   useScrollReveal();
+
+  /* Numéro WhatsApp via variable d'environnement */
+  const WA = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '2290161973836';
 
   /* Form state */
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
@@ -588,7 +603,7 @@ export default function HomePage() {
 
         {/* ── FLOATING WHATSAPP BUTTON ── */}
         <a
-          href="https://wa.me/2290161973836?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20le%20Pack%20Ultime%2052%20Formations."
+          href={`https://wa.me/${WA}?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20le%20Pack%20Ultime%2052%20Formations.`}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Besoin d'aide ? Contactez-nous sur WhatsApp"
