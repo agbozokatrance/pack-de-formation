@@ -9,7 +9,7 @@ declare global {
     FedaPay: {
       init: (options: {
         public_key: string;
-        transaction: { amount: number; description: string };
+        transaction: { amount: number; description: string; custom_metadata?: Record<string, unknown> };
         customer?: { email?: string; lastname?: string; firstname?: string; phone_number?: { number: string; country: string } };
         currency: { iso: string };
         onComplete: (resp: { reason: string }) => void;
@@ -211,6 +211,9 @@ export default function HomePage() {
     /* Afficher immédiatement le spinner — l'utilisateur voit que ça charge */
     setIsLoading(true);
 
+    /* Génération d'un eventId unique pour la déduplication Meta Pixel + CAPI */
+    const eventId = `tx_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
     /* Si FedaPay n'est pas encore chargé, réessayer toutes les 200ms (max 5 sec) */
     let attempts = 0;
     const tryOpen = () => {
@@ -221,6 +224,7 @@ export default function HomePage() {
           transaction: {
             amount: 2500,
             description: 'Pack Ultime 52 Formations - Accès à Vie',
+            custom_metadata: { event_id: eventId },
           },
           customer: {
             email: form.email,
@@ -231,15 +235,32 @@ export default function HomePage() {
           currency: { iso: 'XOF' },
           onComplete(resp) {
             console.log('FedaPay onComplete response:', resp);
-            px('AddPaymentInfo', { value: 8.50, currency: 'USD', content_name: 'Pack Ultime 52 Formations' });
+            px('AddPaymentInfo', { value: 2500, currency: 'XOF', content_name: 'Pack Ultime 52 Formations' });
+
+            /* Stocker l'eventId en sessionStorage comme sauvegarde client */
+            if (typeof window !== 'undefined') {
+              sessionStorage.setItem('meta_event_id', eventId);
+              sessionStorage.setItem('meta_amount', '2500');
+            }
+
+            /* Appel API backend (envoie l'email + déclenche Meta CAPI serveur) */
             if (form.email) {
               fetch('/api/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: form.email, name: form.name }),
+                body: JSON.stringify({
+                  email: form.email,
+                  name: form.name,
+                  phone: form.phone,
+                  eventId: eventId,
+                  amount: 2500,
+                }),
               }).catch(console.error);
             }
-            setTimeout(() => { window.location.href = '/merci'; }, 300);
+
+            setTimeout(() => {
+              window.location.href = `/merci?eventId=${encodeURIComponent(eventId)}&amount=2500`;
+            }, 300);
           },
         }).open();
       } else if (attempts < 25) {
