@@ -1,7 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createHmac } from 'crypto';
+import { createHmac, createHash } from 'crypto';
 import { Resend } from 'resend';
-import { sendMetaCapiPurchaseEvent } from '@/lib/metaCapi';
+
+const PIXEL_ID = '1191042257432191';
+const CAPI_ACCESS_TOKEN =
+  process.env.META_CAPI_ACCESS_TOKEN ||
+  'EAANpPLXf0CIBSMeUkwmo1bWvaDeZB8oWZBH05uFPNnAZBsESSBjOd7Tbhg1B7EmukpERSIRf0mEAXRZBQw60txGPDsrcsXXhsNnjqZBC5GRfnF5Q5NUyYxaC6mFRWLFAY3sxvxfMBwTuwT0wYJ6bb99SNf9HnzaZB14pai1YUc2beBR7CiSAhEXKGcsvZC0Qd9slAZDZD';
+
+const hash = (v?: string | null) => v ? createHash('sha256').update(v.trim().toLowerCase()).digest('hex') : null;
+const normalizePhone = (p?: string | null) => { if (!p) return null; let d = p.replace(/\D/g, ''); if (d.length === 10 && d.startsWith('0')) d = '229' + d.substring(1); return d || null; };
+
+async function sendMetaCapiPurchaseEvent(params: {
+  eventId: string; email?: string; phone?: string; name?: string;
+  amount?: number; currency?: string; clientIp?: string | null;
+  userAgent?: string | null; eventSourceUrl?: string;
+}) {
+  try {
+    const { eventId, email, phone, name, amount = 2500, currency = 'XOF', clientIp, userAgent, eventSourceUrl = 'https://pack-de-formation.vercel.app/merci' } = params;
+    const firstName = name ? name.trim().split(' ')[0] : '';
+    const lastName = name && name.trim().includes(' ') ? name.trim().split(' ').slice(1).join(' ') : '';
+    const userData: Record<string, unknown> = {};
+    const hashedEm = hash(email); if (hashedEm) userData.em = [hashedEm];
+    const hashedPh = hash(normalizePhone(phone)); if (hashedPh) userData.ph = [hashedPh];
+    const hashedFn = hash(firstName); if (hashedFn) userData.fn = [hashedFn];
+    const hashedLn = hash(lastName); if (hashedLn) userData.ln = [hashedLn];
+    if (clientIp) userData.client_ip_address = clientIp;
+    if (userAgent) userData.client_user_agent = userAgent;
+    const payload = { data: [{ event_name: 'Purchase', event_time: Math.floor(Date.now() / 1000), event_id: eventId, event_source_url: eventSourceUrl, action_source: 'website', user_data: userData, custom_data: { value: amount, currency, content_name: 'Pack Ultime 52 Formations', content_ids: ['pack-52-formations'], content_type: 'product', num_items: 1 } }] };
+    const res = await fetch(`https://graph.facebook.com/v19.0/${PIXEL_ID}/events?access_token=${CAPI_ACCESS_TOKEN}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const data = await res.json();
+    console.log(`✅ CAPI Purchase envoyé ! EventID: ${eventId}`, JSON.stringify(data));
+    return data;
+  } catch (err) { console.error('Meta CAPI error:', err); return null; }
+}
 
 export const dynamic = 'force-dynamic';
 
