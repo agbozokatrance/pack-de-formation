@@ -10,27 +10,54 @@ declare global {
 }
 
 export default function MerciPage() {
+  /* Numéro WhatsApp via variable d'environnement */
+  const WA = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '2290161973836';
+
   useEffect(() => {
-    /* Helper pour tracker l'achat de manière garantie */
+    /* Récupération de l'eventId et du montant pour la déduplication Pixel + CAPI */
+    const searchParams = new URLSearchParams(window.location.search);
+    const eventId =
+      searchParams.get('eventId') ||
+      (typeof window !== 'undefined' ? sessionStorage.getItem('meta_event_id') : null) ||
+      `tx_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const amount =
+      Number(searchParams.get('amount') || (typeof window !== 'undefined' ? sessionStorage.getItem('meta_amount') : null)) || 2500;
+
+    /* Helper pour tracker l'achat de manière garantie avec l'exact eventID */
     const firePurchase = () => {
       if (typeof window !== 'undefined' && window.fbq) {
         window.fbq('track', 'PageView');
-        window.fbq('trackCustom', 'AchatFormation', {
-          value: 8.5,
-          currency: 'USD',
-          content_name: 'Pack Ultime 52 Formations',
-          content_ids: ['pack-52-formations'],
-          num_items: 1,
-        });
-        window.fbq('track', 'Purchase', {
-          value: 8.5,
-          currency: 'USD',
-          content_name: 'Pack Ultime 52 Formations',
-          content_ids: ['pack-52-formations'],
-          content_type: 'product',
-          num_items: 1,
-        });
-        console.log('✅ Meta Pixel: Événement Purchase (Achat) envoyé avec succès !');
+
+        /* Événement personnalisé */
+        window.fbq(
+          'trackCustom',
+          'AchatFormation',
+          {
+            value: amount,
+            currency: 'XOF',
+            content_name: 'Pack Ultime 52 Formations',
+            content_ids: ['pack-52-formations'],
+            num_items: 1,
+          },
+          { eventID: eventId }
+        );
+
+        /* Événement officiel Purchase avec { eventID: eventId } pour déduplication avec CAPI */
+        window.fbq(
+          'track',
+          'Purchase',
+          {
+            value: amount,
+            currency: 'XOF',
+            content_name: 'Pack Ultime 52 Formations',
+            content_ids: ['pack-52-formations'],
+            content_type: 'product',
+            num_items: 1,
+          },
+          { eventID: eventId }
+        );
+
+        console.log(`✅ Meta Pixel: Événement Purchase envoyé avec succès ! EventID: ${eventId}`);
         return true;
       }
       return false;
@@ -92,7 +119,7 @@ export default function MerciPage() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
           <a
             id="whatsapp-support-btn"
-            href="https://wa.me/2290161973836?text=Bonjour%2C%20j%27ai%20effectu%C3%A9%20mon%20paiement%20pour%20le%20Pack%20Ultime%2052%20Formations%20et%20j%27ai%20besoin%20d%27aide."
+            href={`https://wa.me/${WA}?text=Bonjour%2C%20j%27ai%20effectu%C3%A9%20mon%20paiement%20pour%20le%20Pack%20Ultime%2052%20Formations%20et%20j%27ai%20besoin%20d%27aide.`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white font-bold px-8 py-4 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-green-500/20"
