@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { sendMetaCapiPurchaseEvent } from '@/lib/metaCapi';
 
 export const dynamic = 'force-dynamic';
 
@@ -70,11 +71,28 @@ export async function POST(req: NextRequest) {
     const resend = new Resend(apiKey);
 
     const body = await req.json();
-    const { email } = body;
+    const { email, name, phone, eventId, amount } = body;
 
     if (!email) {
       return NextResponse.json({ error: 'Email requis' }, { status: 400 });
     }
+
+    /* Déclencher l'événement Meta Conversions API (CAPI) côté serveur */
+    const capiEventId = eventId || `tx_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || null;
+    const userAgent = req.headers.get('user-agent') || null;
+
+    sendMetaCapiPurchaseEvent({
+      eventId: capiEventId,
+      email,
+      phone,
+      name,
+      amount: Number(amount) || 2500,
+      currency: 'XOF',
+      clientIp,
+      userAgent,
+      eventSourceUrl: 'https://pack-de-formation.vercel.app/merci',
+    }).catch((err) => console.error('send-email CAPI error:', err));
 
     /* Premier essai : avec le domaine starbetpay.com */
     let result = await resend.emails.send({
